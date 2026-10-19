@@ -1,6 +1,7 @@
 import datetime
 from sqlalchemy.orm import Session
 from app.core.database import SessionLocal, Base, engine
+from app.core.security import get_password_hash
 from app.models.user import Usuario
 from app.models.doctor import Especialidad, Consultorio, Medico, HorarioMedico
 from app.models.patient import Paciente
@@ -12,9 +13,19 @@ def init_default_data():
     """
     db: Session = SessionLocal()
     try:
+        bcrypt_pass = get_password_hash("Clinica2026!")
+
         try:
-            if db.query(Usuario).first():
-                # Ya existen usuarios
+            usuarios_existentes = db.query(Usuario).all()
+            if usuarios_existentes:
+                # Asegurar que las contraseñas coincidan con Clinica2026!
+                for u in usuarios_existentes:
+                    u.password_hash = bcrypt_pass
+                    u.activo = True
+                    u.intentos_fallidos = 0
+                    u.bloqueado_hasta = None
+                db.commit()
+                print("[INIT DB] ✅ Contraseñas de usuarios actualizadas y verificadas con 'Clinica2026!'.")
                 return
         except Exception as query_err:
             print(f"[INIT DB] Esquema incompatible o tabla antigua detectada ({query_err}). Recreando tablas limpias...")
@@ -27,7 +38,6 @@ def init_default_data():
         print("[INIT DB] Base de datos sin usuarios. Sembrando datos por defecto para el sistema...")
 
         # 1. Usuarios con contraseña 'Clinica2026!'
-        bcrypt_pass = "$2b$12$b02m5Hy33XQC5doGidfnBeKCCnxGYpykLQXwFzLi7.XPO2mXmon6."
         usuarios = [
             Usuario(id=1, username="admin", password_hash=bcrypt_pass, rol="admin"),
             Usuario(id=2, username="dr.ramirez", password_hash=bcrypt_pass, rol="medico"),
