@@ -8,13 +8,21 @@ from app.models.medical_record import Expediente
 
 def init_default_data():
     """
-    Inicializa datos de prueba si la base de datos (por ejemplo SQLite en la nube) está vacía.
+    Inicializa datos de prueba si la base de datos (por ejemplo SQLite en la nube) está vacía o tiene un esquema obsoleto.
     """
     db: Session = SessionLocal()
     try:
-        if db.query(Usuario).first():
-            # Ya existen usuarios
-            return
+        try:
+            if db.query(Usuario).first():
+                # Ya existen usuarios
+                return
+        except Exception as query_err:
+            print(f"[INIT DB] Esquema incompatible o tabla antigua detectada ({query_err}). Recreando tablas limpias...")
+            db.rollback()
+            db.close()
+            Base.metadata.drop_all(bind=engine)
+            Base.metadata.create_all(bind=engine)
+            db = SessionLocal()
 
         print("[INIT DB] Base de datos sin usuarios. Sembrando datos por defecto para el sistema...")
 

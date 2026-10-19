@@ -36,5 +36,6 @@ frontend/dist/
 
 # Logs & temp
 *.log
+*.db
 .DS_Store
 Thumbs.db
