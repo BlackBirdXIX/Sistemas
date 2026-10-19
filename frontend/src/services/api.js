@@ -1,7 +1,17 @@
 import axios from 'axios';
 
+const BACKEND_PROD_URL = 'https://clinica-backend-wqgu.onrender.com/api/v1';
+
+const getBaseURL = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl && !envUrl.includes('tu-backend')) {
+    return envUrl;
+  }
+  return import.meta.env.PROD ? BACKEND_PROD_URL : '/api/v1';
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },
@@ -31,7 +41,7 @@ api.interceptors.response.use(
       const refreshToken = localStorage.getItem('refresh_token');
       if (refreshToken) {
         try {
-          const res = await axios.post('/api/v1/auth/refresh', null, {
+          const res = await axios.post(`${api.defaults.baseURL}/auth/refresh`, null, {
             params: { refresh_token: refreshToken }
           });
           const { access_token, refresh_token: newRefresh } = res.data;
