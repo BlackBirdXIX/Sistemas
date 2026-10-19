@@ -24,9 +24,13 @@ app.add_middleware(
 
 @app.on_event("startup")
 def startup_event():
-    # Las tablas ya fueron creadas por 01_esquema_clinica.sql
-    # No llamamos create_all para no interferir con el esquema de MySQL
-    pass
+    try:
+        # Asegura creación de tablas si no existen (especialmente en SQLite en la nube)
+        Base.metadata.create_all(bind=engine)
+        from app.core.init_db import init_default_data
+        init_default_data()
+    except Exception as e:
+        print(f"[STARTUP WARN] Error al inicializar esquema/datos: {e}")
 
 @app.get("/")
 def root():
