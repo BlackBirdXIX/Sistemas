@@ -44,10 +44,11 @@ export const AuthProvider = ({ children }) => {
     window.location.href = '/login';
   };
 
-  const rolNombre = user?.rol?.nombre || '';
-  const isAdmin = rolNombre === 'Administrador';
-  const isDoctor = rolNombre === 'Médico';
-  const isReceptionist = rolNombre === 'Recepcionista';
+  // En el esquema Sonnet, rol es un string ENUM: 'admin', 'medico', 'recepcion', 'paciente'
+  const rolNombre = user?.rol || '';
+  const isAdmin        = rolNombre === 'admin';
+  const isDoctor       = rolNombre === 'medico';
+  const isReceptionist = rolNombre === 'recepcion';
 
   return (
     <AuthContext.Provider value={{

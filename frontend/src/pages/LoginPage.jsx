@@ -1,45 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Activity, Lock, Mail, AlertCircle, ShieldCheck } from 'lucide-react';
+import { Activity, Lock, User, AlertCircle, ShieldCheck } from 'lucide-react';
 
 export const LoginPage = () => {
+  const { login, user } = useAuth();
   const navigate = useNavigate();
-  const { login, user, loading: authLoading } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!authLoading && user) {
-      navigate('/', { replace: true });
-    }
-  }, [user, authLoading, navigate]);
-
-  const formatErrorMessage = (detail) => {
-    if (Array.isArray(detail)) {
-      return detail.map(item => item?.msg || item?.detail || 'Error de validación').join(', ');
-    }
-    if (typeof detail === 'string') {
-      return detail;
-    }
-    if (detail && typeof detail === 'object') {
-      return detail.msg || detail.detail || 'Error al iniciar sesión. Verifique sus credenciales.';
-    }
-    return 'Error al iniciar sesión. Verifique sus credenciales.';
-  };
+  if (user) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
-      await login(username.trim(), password);
-      navigate('/', { replace: true });
+      await login(username, password);
+      navigate('/');
     } catch (err) {
-      setError(formatErrorMessage(err.response?.data?.detail));
+      const msg = err.response?.data?.detail || 'Error al iniciar sesión. Verifique sus credenciales.';
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -52,7 +37,6 @@ export const LoginPage = () => {
 
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Glow Decors */}
       <div className="absolute -top-32 -left-32 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl"></div>
       <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl"></div>
 
@@ -80,7 +64,7 @@ export const LoginPage = () => {
               Usuario
             </label>
             <div className="relative">
-              <Mail className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <User className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 required
@@ -121,7 +105,7 @@ export const LoginPage = () => {
         {/* Demo Quick Access */}
         <div className="mt-8 pt-6 border-t border-slate-700/60">
           <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 text-center flex items-center justify-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-teal-400" /> Accesos Rápida de Prueba (Demo):
+            <ShieldCheck className="w-3.5 h-3.5 text-teal-400" /> Accesos rápidos de prueba · clave: <span className="text-teal-400">Clinica2026!</span>
           </p>
           <div className="grid grid-cols-3 gap-2 text-[11px]">
             <button

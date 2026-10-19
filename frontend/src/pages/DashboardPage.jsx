@@ -48,7 +48,7 @@ export const DashboardPage = () => {
       <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-teal-950 p-6 md:p-8 rounded-3xl text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
         <div className="relative z-10">
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
-            ¡Hola, {user?.nombre}! 👋
+            ¡Hola, {user?.nombre || user?.username}! 👋
           </h1>
           <p className="text-slate-300 text-sm mt-1 max-w-xl">
             Bienvenido al panel principal de la clínica. Gestión de citas, expedientes clínicos bajo NOM-004 y control de atención del día.

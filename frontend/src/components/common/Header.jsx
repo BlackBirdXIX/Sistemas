@@ -26,11 +26,11 @@ export const Header = () => {
       <div className="flex items-center space-x-4">
         <div className="flex items-center space-x-3 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200/80">
           <div className="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-sm shadow-xs">
-            {user?.nombre?.[0] || 'U'}
+            {user?.nombre?.[0] || user?.username?.[0]?.toUpperCase() || 'U'}
           </div>
           <div className="text-left hidden sm:block">
             <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
-              {user?.nombre} {user?.primer_apellido}
+              {user?.nombre ? `${user.nombre} ${user.primer_apellido || ''}` : user?.username}
             </div>
             <div className="mt-0.5">{getRoleBadge()}</div>
           </div>
